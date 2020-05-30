@@ -16,7 +16,7 @@ function activate(context) {
 		vscode.window.showInputBox({ placeHolder: 'Enter Command name here' }).then(input => {
 
 			let name = input.toLowerCase();
-			let File = '/**\n* @usage !' + name + '\n* @does WHAT DOES YOUR COMMAND\n*/\nmodule.exports = {\n   ' + name + ': function(message) {\n	   message.channel.send(\'Function ' + name + '\');\n   }}';
+			let File = '/**\n * @usage !' + name + '\n * @does WHAT DOES YOUR COMMAND\n */\nmodule.exports = {\n   ' + name + ': function(message) {\n	   message.channel.send(\'Function ' + name + '\');\n   }\n}';
 			let Location = vscode.workspace.rootPath + '/Commands/' + name + '.js';
 
 			try {
