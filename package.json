@@ -1,9 +1,9 @@
 {
-	"name": "uwu-commands",
-	"displayName": "uwubot-commands",
+	"name": "uwuv2-commands",
+	"displayName": "uwubotv2-commands",
 	"publisher": "ackhack",
 	"description": "",
-	"version": "2.0.0",
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.44.0"
 	},
@@ -11,19 +11,24 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:uwu-ct.createCT",
-		"onCommand:uwu-ct.testCommand"
+		"onCommand:uwu-ct.createDC",
+		"onCommand:uwu-ct.DCtoNC",
+		"onCommand:uwu-ct.DCtoAC"
 	],
 	"main": "./extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "uwu-ct.createCT",
-				"title": "uwuBot: Create Command Template"
+				"command": "uwu-ct.createDC",
+				"title": "uwuBot: Create Developer Command Template"
 			},
 			{
-				"command": "uwu-ct.testCommand",
-				"title": "uwuBot: Tester for the open Command"
+				"command": "uwu-ct.DCtoNC",
+				"title": "uwuBot: Convert Developer Command to Normal Command"
+			},
+			{
+				"command": "uwu-ct.DCtoAC",
+				"title": "uwuBot: Convert Developer Command to Admin Command"
 			}
 		]
 	},

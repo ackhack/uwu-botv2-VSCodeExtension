@@ -2,59 +2,75 @@
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const fs = require('fs');
+const path = require('path');
 
-var createCT = function () { //This creates a Command Template
+var createDC = function () {
 	vscode.window.showInputBox({ placeHolder: 'Enter Command name here' }).then(input => {
 
-		let name = input.toLowerCase();
-		let File = '/**\n * @usage !' + name + '\n * @does WHAT DOES YOUR COMMAND\n */\nmodule.exports = {\n   ' + name + ': function(message) {\n	   message.channel.send(\'Function ' + name + '\');\n   }\n}';
-		let Location = vscode.workspace.rootPath + '/Commands/' + name + '.js';
+		let name = input[0].toUpperCase() + input.slice(1);
+		let File = `import DiscordJS from 'discord.js';\nimport { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';\nimport { DevCommandClass } from '../utils/DevCommand/DevCommand';\n\nclass ${name} extends DevCommandClass {\n    name = "${name.toLowerCase()}";\n    shortcut: string | undefined;\n    description: string;\n    options: { name: string; description: string; required: boolean; type: ApplicationCommandOptionTypes; }[];\n    reply(interaction: DiscordJS.CommandInteraction<DiscordJS.CacheType>): void {\n        interaction.reply({ content: "${name} Command called" });\n    }\n}\n\nexport function getInstance() { return new ${name}() };`;
+		let Location = vscode.workspace.workspaceFolders[0].uri.fsPath + path.sep + 'src' + path.sep + 'DevCommands' + path.sep + name + '.ts';
 
 		try {
 			fs.writeFileSync(Location, File);
 			vscode.window.showInformationMessage('Created Command');
+			vscode.workspace.openTextDocument(Location).then(doc => {
+				vscode.window.showTextDocument(doc);
+			});
 		} catch (err) {
 			vscode.window.showInformationMessage('Error :' + err);
 		}
 	})
 }
 
-var testCommand = function () {
-	vscode.window.showInputBox({ placeHolder: 'Enter Arguments for Command' }).then(input => {
+var dcToNc = function () {
+	let filePath = vscode.window.activeTextEditor.document.uri.fsPath;
+	if (!filePath.includes(vscode.workspace.workspaceFolders[0].uri.fsPath + path.sep + 'src' + path.sep + 'DevCommands' + path.sep)) {
+		vscode.window.showInformationMessage('This is not a DevCommand, check if it is in the DevCommands folder');
+		return;
+	}
+	try {
+		let content = fs.readFileSync(filePath).toString();
+		content = content.replace(`import { DevCommandClass } from '../utils/DevCommand/DevCommand';`, `import { NormalCommandClass } from '../utils/NormalCommand/NormalCommand';`);
+		content = content.replace(/class (\w+) extends DevCommandClass {/, `class $1 extends NormalCommandClass {`);
+		let newPath = filePath.replace('DevCommands', 'Commands');
+		fs.writeFileSync(newPath, content);
+		fs.rmSync(filePath);
+		vscode.workspace.openTextDocument(newPath).then(doc => {
+			vscode.window.showTextDocument(doc);
+		});
+		vscode.window.showInformationMessage('Converted to Normal Command');
+	} catch (err) {
+		vscode.window.showInformationMessage('Error :' + err);
+	}
+}
 
-		let Location = vscode.window.activeTextEditor.document.fileName;
-		let Pattern = /.*[\\/]uwuBot[\\/]Commands[\\/].+\.js/;
-
-		if (Location.match(Pattern) == null) { //Test if File is in CommandFolder
-			vscode.window.showInformationMessage(Location + " is not a valid CommandLocation");
-			return;
-		}
-
-		this.global.wsip = require(vscode.workspace.rootPath + '/Files/local/wsip.json'); //IP thats used for every WS-Call
-
-		let name = Location.match(/.+[\\/]Commands[\\/](.+)\.js/)[1];
-		let message = {};
-
-		message.content = "!" + name + " " + input;
-
-		message.channel = {};
-		message.channel.send = function (toSend) {
-			vscode.window.showInformationMessage(toSend);
-		}
-
-		try {
-			let com = require(Location);
-			com[name](message);
-			delete require.cache[Location];
-		} catch (err) {
-			vscode.window.showInformationMessage(err);
-		}
-	})
+var dcToAc = function () {
+	let filePath = vscode.window.activeTextEditor.document.uri.fsPath;
+	if (!filePath.includes(vscode.workspace.workspaceFolders[0].uri.fsPath + path.sep + 'src' + path.sep + 'DevCommands' + path.sep)) {
+		vscode.window.showInformationMessage('This is not a DevCommand, check if it is in the DevCommands folder');
+		return;
+	}
+	try {
+		let content = fs.readFileSync(filePath).toString();
+		content = content.replace(`import { DevCommandClass } from '../utils/DevCommand/DevCommand';`, `import { AdminCommandClass } from '../utils/AdminCommand/AdminCommand';`);
+		content = content.replace(/class (\w+) extends DevCommandClass {/, `class $1 extends AdminCommandClass {`);
+		let newPath = filePath.replace('DevCommands', 'AdminCommands');
+		fs.writeFileSync(newPath, content);
+		fs.rmSync(filePath);
+		vscode.workspace.openTextDocument(newPath).then(doc => {
+			vscode.window.showTextDocument(doc);
+		});
+		vscode.window.showInformationMessage('Converted to Admin Command');
+	} catch (err) {
+		vscode.window.showInformationMessage('Error :' + err);
+	}
 }
 
 var Functions = { //Add new Functions here
-	"uwu-ct.createCT": createCT,
-	"uwu-ct.testCommand": testCommand
+	"uwu-ct.createDC": createDC,
+	"uwu-ct.DCtoNC": dcToNc,
+	"uwu-ct.DCtoAC": dcToAc
 }
 
 /**
@@ -66,8 +82,6 @@ function activate(context) { //Add all Functions as Commands
 		context.subscriptions.push(vscode.commands.registerCommand(x, Functions[x]));
 	}
 }
-exports.activate = activate;
-
 // this method is called when your extension is deactivated
 function deactivate() { }
 
