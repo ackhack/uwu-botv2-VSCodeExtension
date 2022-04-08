@@ -8,7 +8,7 @@ var createDC = function () {
 	vscode.window.showInputBox({ placeHolder: 'Enter Command name here' }).then(input => {
 
 		let name = input[0].toUpperCase() + input.slice(1);
-		let File = `import DiscordJS from 'discord.js';\nimport { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';\nimport { DevCommandClass } from '../utils/DevCommand/DevCommand';\n\nclass ${name} extends DevCommandClass {\n    name = "${name.toLowerCase()}";\n    shortcut: string | undefined;\n    description: string;\n    options: { name: string; description: string; required: boolean; type: ApplicationCommandOptionTypes; }[];\n    reply(interaction: DiscordJS.CommandInteraction<DiscordJS.CacheType>): void {\n        interaction.reply({ content: "${name} Command called" });\n    }\n}\n\nexport function getInstance() { return new ${name}() };`;
+		let File = `import DiscordJS from 'discord.js';\nimport { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';\nimport { DevCommandClass } from '../utils/Commands/DevCommand/DevCommand';\n\nclass ${name} extends DevCommandClass {\n    name = "${name.toLowerCase()}";\n    shortcut: string | undefined;\n    description: string;\n    options: { name: string; description: string; required: boolean; type: ApplicationCommandOptionTypes; }[];\n    reply(interaction: DiscordJS.CommandInteraction<DiscordJS.CacheType>): void {\n        interaction.reply({ content: "${name} Command called" });\n    }\n}\n\nexport function getInstance() { return new ${name}() };`;
 		let Location = vscode.workspace.workspaceFolders[0].uri.fsPath + path.sep + 'src' + path.sep + 'DevCommands' + path.sep + name + '.ts';
 
 		try {
@@ -31,7 +31,7 @@ var dcToNc = function () {
 	}
 	try {
 		let content = fs.readFileSync(filePath).toString();
-		content = content.replace(`import { DevCommandClass } from '../utils/DevCommand/DevCommand';`, `import { NormalCommandClass } from '../utils/NormalCommand/NormalCommand';`);
+		content = content.replace(`import { DevCommandClass } from '../utils/Commands/DevCommand/DevCommand';`, `import { NormalCommandClass } from '../utils/Commands/NormalCommand/NormalCommand';`);
 		content = content.replace(/class (\w+) extends DevCommandClass {/, `class $1 extends NormalCommandClass {`);
 		let newPath = filePath.replace('DevCommands', 'Commands');
 		fs.writeFileSync(newPath, content);
@@ -53,7 +53,7 @@ var dcToAc = function () {
 	}
 	try {
 		let content = fs.readFileSync(filePath).toString();
-		content = content.replace(`import { DevCommandClass } from '../utils/DevCommand/DevCommand';`, `import { AdminCommandClass } from '../utils/AdminCommand/AdminCommand';`);
+		content = content.replace(`import { DevCommandClass } from '../utils/Commands/DevCommand/DevCommand';`, `import { AdminCommandClass } from '../utils/Commands/AdminCommand/AdminCommand';`);
 		content = content.replace(/class (\w+) extends DevCommandClass {/, `class $1 extends AdminCommandClass {`);
 		let newPath = filePath.replace('DevCommands', 'AdminCommands');
 		fs.writeFileSync(newPath, content);
