@@ -3,7 +3,7 @@
 	"displayName": "uwubotv2-commands",
 	"publisher": "ackhack",
 	"description": "",
-	"version": "2.0.0",
+	"version": "3.0.0",
 	"engines": {
 		"vscode": "^1.44.0"
 	},
@@ -35,7 +35,9 @@
 	"scripts": {
 		"lint": "eslint .",
 		"pretest": "npm run lint",
-		"test": "node ./test/runTest.js"
+		"test": "node ./test/runTest.js",
+		"build": "rm *.vsix; vsce package",
+		"install": "code --install-extension @(gci *.vsix)[0]"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.44.0",

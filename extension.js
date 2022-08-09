@@ -8,7 +8,7 @@ var createDC = function () {
 	vscode.window.showInputBox({ placeHolder: 'Enter Command name here' }).then(input => {
 
 		let name = input[0].toUpperCase() + input.slice(1);
-		let File = `import DiscordJS from 'discord.js';\nimport { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';\nimport { DevCommandClass } from '../utils/Commands/DevCommand/DevCommand';\n\nclass ${name} extends DevCommandClass {\n    name = "${name.toLowerCase()}";\n    shortcut: string | undefined;\n    description: string;\n    options: { name: string; description: string; required: boolean; type: ApplicationCommandOptionTypes; }[];\n    reply(interaction: DiscordJS.CommandInteraction<DiscordJS.CacheType>): void {\n        interaction.reply({ content: "${name} Command called" });\n    }\n}\n\nexport function getInstance() { return new ${name}() };`;
+		let File = `import DiscordJS, { ApplicationCommandOptionType } from 'discord.js';\nimport { DevCommandClass } from '../utils/Commands/DevCommand/DevCommand';\n\nclass ${name} extends DevCommandClass {\n    name = "${name.toLowerCase()}";\n    shortcut: string | undefined;\n    description: string;\n    options: { name: string; description: string; required: boolean; type: ApplicationCommandOptionType; }[];\n    reply(interaction: DiscordJS.CommandInteraction<DiscordJS.CacheType>): void {\n        interaction.reply({ content: "${name} Command called" });\n    }\n}\n\nexport function getInstance() { return new ${name}() };`;
 		let Location = vscode.workspace.workspaceFolders[0].uri.fsPath + path.sep + 'src' + path.sep + 'DevCommands' + path.sep + name + '.ts';
 
 		try {
